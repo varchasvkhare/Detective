@@ -1,7 +1,1 @@
-aiohttp
-yarl==1.7.2
-numpy==1.22.3
-typing-extensions==4.2.0
-requests==2.27.1
-orjson==3.6.8
-discord
+discord==1.7.3
