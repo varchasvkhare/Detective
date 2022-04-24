@@ -1,3 +1,4 @@
+import keep_alive
 import discord
 from discord.ext import commands
 import random
@@ -43,4 +44,5 @@ async def joined(ctx, member: discord.Member):
     """Says when a member joined."""
     await ctx.send(f'{member.name} joined in {member.joined_at}')
 
+keep_alive.keep_alive()
 bot.run('ODcxNjk3MTgwMDQwMjUzNDgx.YQfFQw.vJLVpVsQKuKv8OsfMQdDVzqbcqs')
