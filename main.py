@@ -24,17 +24,16 @@ POSTGRES_DSN = 'postgres://xmlluvrkcwnoxn:7b5307728139ba19c8c4990f658ad9a2945d34
 async def _prefix_callable(bot: commands.AutoShardedBot, message: discord.Message):
     if not hasattr(bot, 'db'): # hasnt connected
         return
-
+        
+    prefix = await bot.db.fetchval('SELECT prefix FROM prefixes WHERE guild_id = $1', message.guild.id) or 'd/' # default pre
+    
     base = [
         f'<@{bot.user.id}>',
-        f'<@!{bot.user.id}>'
+        f'<@!{bot.user.id}>',
+        prefix
     ]
-
-    prefix = await bot.db.fetchval('SELECT prefix FROM prefixes WHERE guild_id = $1', message.guild.id)
     
-    base.appeprefix or 'd/' # default pre
-
-    return commands.when_mentioned_or(prefix)
+    return base
 
 class Bot(commands.AutoShardedBot):
     def __init__(self):
