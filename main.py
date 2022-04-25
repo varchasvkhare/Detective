@@ -10,7 +10,7 @@ from discord.ext import commands, tasks
 import asyncpg
 
 BOT_TOKEN = 'ODcxNjk3MTgwMDQwMjUzNDgx.YQfFQw.vJLVpVsQKuKv8OsfMQdDVzqbcqs'
-POSTGRES_DSN = 'postgres://izxulgoxqihptr:0ac488b8b6004ba56398253300507c1909d794205dd5debec4d9c9f99f647793@ec2-54-80-123-146.compute-1.amazonaws.com:5432/d8uvc53p0hssa7'
+POSTGRES_DSN = 'postgres://xmlluvrkcwnoxn:7b5307728139ba19c8c4990f658ad9a2945d34e1893f22142d9441813f091ebf@ec2-3-218-171-44.compute-1.amazonaws.com:5432/d3tgnrh10m69n'
 
 async def _prefix_callable(bot: commands.AutoShardedBot, message: discord.Message):
     if not hasattr(bot, 'db'): # hasnt connected
