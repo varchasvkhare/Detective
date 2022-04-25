@@ -2,9 +2,10 @@ import inspect
 
 import discord
 from discord import app_commands 
+from discord import commands
 
 
-class StatsSlash(app_commands.Cog, name="stats-slash"):
+class StatsSlash(commands.Cog, name="stats-slash"):
     def __init__(self, bot):
         self.bot = bot
         tree = app_commands.CommandTree(self.bot)
