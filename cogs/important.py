@@ -92,5 +92,5 @@ class Important(commands.Cog):
         )
         await ctx.reply(embed=embed, view=view)
         
-def setup(bot):
-    bot.add_cog(Important(bot))
+async def setup(bot):
+    await bot.add_cog(Important(bot))

@@ -18,4 +18,4 @@ class Config(commands.Cog):
         await ctx.send(f'Prefix set to: {new_prefix}', allowed_mentions=discord.AllowedMentions().none())
 
 async def setup(bot):
-    bot.add_cog(Config(bot))
+    await bot.add_cog(Config(bot))
