@@ -9,23 +9,16 @@ import discord
 from discord.ext import commands, tasks
 import asyncpg
 
-class BetterHelp(commands.HelpCommand):
-    def __init__(self):
-        super().__init__(
-            command_attrs={
-                'name': 'help',
-                'help': 'Shows the help command for Detective bot.'
-            }
-        )
-
 BOT_TOKEN = 'ODcxNjk3MTgwMDQwMjUzNDgx.YQfFQw.vJLVpVsQKuKv8OsfMQdDVzqbcqs'
 POSTGRES_DSN = 'postgres://xmlluvrkcwnoxn:7b5307728139ba19c8c4990f658ad9a2945d34e1893f22142d9441813f091ebf@ec2-3-218-171-44.compute-1.amazonaws.com:5432/d3tgnrh10m69n'
 
 async def _prefix_callable(bot: commands.AutoShardedBot, message: discord.Message):
     if not hasattr(bot, 'db'): # hasnt connected
         return
-        
-    prefix = await bot.db.fetchval('SELECT prefix FROM prefixes WHERE guild_id = $1', message.guild.id) or 'd/' # default pre
+
+    await bot.get_channel(966385551991246898).send(await bot.db.fetchval('SELECT prefix FROM prefixes WHERE guild_id = $1', message.guild.id))
+    # prefix = await bot.db.fetchval('SELECT prefix FROM prefixes WHERE guild_id = $1', message.guild.id) or 'd/' # default pre
+    prefix = 'd/'
     
     base = [
         f'<@{bot.user.id}>',
@@ -43,7 +36,6 @@ class Bot(commands.AutoShardedBot):
             intents=discord.Intents.all(),
             case_insensitive=True,
             strip_after_prefix=True,
-            help_command=BetterHelp(),
             owner_ids=[
                 868465221373665351,
                 714731543309844561 # invalid
@@ -53,12 +45,12 @@ class Bot(commands.AutoShardedBot):
         self.add_check(self.blacklisted_check)
 
         self.fun_database = {
-            "truths": self.parse_list_file('data/truths.txt'),
-            "dares": self.parse_list_file('data/dares.txt'),
-            "nhie": self.parse_list_file('data/nhie.txt'),
-            "nsfw_truth": self.parse_list_file('data/nsfw_truth.txt'),
-            "nsfw_dare": self.parse_list_file('data/nsfw_dare.txt'),
-            "tot": self.parse_list_file('data/tot.txt')
+            "truths": self.parse_list_file('./data/truths.txt'),
+            "dares": self.parse_list_file('./data/dares.txt'),
+            "nhie": self.parse_list_file('./data/nhie.txt'),
+            "nsfw_truth": self.parse_list_file('./data/nsfw_truth.txt'),
+            "nsfw_dare": self.parse_list_file('./data/nsfw_dare.txt'),
+            "tot": self.parse_list_file('./data/tot.txt')
         }
     
     def parse_list_file(self, file_path: str) -> list:
