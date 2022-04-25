@@ -1,5 +1,4 @@
 import random
-import json
 import os
 import io
 import textwrap
@@ -12,6 +11,7 @@ import inspect
 import discord
 from discord.ext import commands, tasks, menus
 import import_expression
+import asyncpg
 
 class BetterHelp(commands.HelpCommand):
     def __init__(self):
@@ -23,17 +23,21 @@ class BetterHelp(commands.HelpCommand):
         )
 
 BOT_TOKEN = 'ODcxNjk3MTgwMDQwMjUzNDgx.YQfFQw.vJLVpVsQKuKv8OsfMQdDVzqbcqs'
+POSTGRES_DSN = 'postgres://xmlluvrkcwnoxn:7b5307728139ba19c8c4990f658ad9a2945d34e1893f22142d9441813f091ebf@ec2-3-218-171-44.compute-1.amazonaws.com:5432/d3tgnrh10m69n'
 
 async def get_prefix(bot: commands.Bot, message: discord.Message):
-    with open('prefixes.json', 'r') as f:
-        prefixes = json.load(f)
-    return prefixes[str(message.guild.id)]
+    prefix = await bot.db.fetchval('SELECT prefix FROM prefixes WHERE guild_id = $1', message.guild.id)
+    
+    prefix = prefix or 'd/' # default pre
+
+    return prefix
 
 bot = commands.AutoShardedBot(
     command_prefix=get_prefix,
     shard_count=1, 
     intents=discord.Intents.all(),
     case_insensitive=True,
+    strip_after_prefix=True,
     help_command=BetterHelp(),
     owner_ids=[
         868465221373665351,
@@ -42,6 +46,22 @@ bot = commands.AutoShardedBot(
 )
 
 # setup
+
+def load_commands(command_type: str) -> None:
+    for file in os.listdir(f"./cogs/{command_type}"):
+        if file.endswith(".py"):
+            extension = file[:-3]
+            try:
+                bot.load_extension(f"cogs.{command_type}.{extension}")
+                print(f"Loaded extension '{extension}'")
+            except Exception as e:
+                exception = f"{type(e).__name__}: {e}"
+                print(f"Failed to load extension {extension}\n{exception}")
+
+
+if __name__ == "__main__":
+    #load_commands("slash")
+    load_commands("normal")
 
 def parse_list_file(file_path: str) -> list:
 	"""Parse a text file into a list containing each line."""
@@ -58,18 +78,7 @@ database = {
     "tot": parse_list_file('data/tot.txt')
 }
 
-with open("blacklist.json", "r") as f:
-    blacklist = json.load(f)
-
-with open("n-rating-guild.json", "r") as f:
-    nrating = json.load(f)
-
 # main cmds
-
-@bot.command()
-async def ping(ctx):
-    embedVar = discord.Embed(title="Latency", description=f"<a:latency:871646202389737483> {str(round(bot.latency * 1000))}ms\nShard {ctx.guild.shard_id}")
-    await ctx.send(embed=embedVar)
 
 @bot.command(name='report')
 @commands.cooldown(1, 60, commands.BucketType.user)
@@ -255,7 +264,12 @@ async def error_handler(ctx, error):
 
 @bot.check
 async def blacklisted_check(ctx: commands.Context):
-    if ctx.author.id in blacklist:
+    # bot owners bypass this
+    if await bot.is_owner(ctx.author):
+        return True
+
+    res = await bot.db.fetchval('SELECT user_id FROM blacklist WHERE user_id = $1', ctx.author.id)
+    if res: # db contains an entry - blacklisted so return False (cant use bot)
         delete_after: int = 7
         
         embed = discord.Embed(
@@ -268,7 +282,8 @@ async def blacklisted_check(ctx: commands.Context):
         await ctx.message.delete(delay=delete_after)
 
         return False
-    return True
+    else: # everything is normal, not blacklisted
+        return True
 
 bot._last_result = None # for eval cmd
 
@@ -289,35 +304,17 @@ async def _before_change_status():
 async def on_ready():
     print(f'Logged in as {bot.user} (ID: {bot.user.id})')
     print('------')
-    change_status.start()
 
     await bot.load_extension('jishaku')
+    bot.db = await asyncpg.create_pool(dsn=POSTGRES_DSN)
 
-@bot.listen('on_guild_join')
-async def guild_join_handler(guild):
-    with open('prefixes.json', 'r') as f:
-        prefixes = json.load(f)
-
-    prefixes[str(guild.id)] = 'd/'
-
-    with open('prefixes.json', 'w') as f:
-        json.dump(prefixes, f, indent=4)
-
-@bot.listen('on_guild_remove')
-async def guild_remove_handler(guild):
-    with open('prefixes.json', 'r') as f:
-        prefixes = json.load(f)
-
-    prefixes.pop(str(guild.id))
-
-    with open('prefixes.json', 'w') as f:
-        json.dump(prefixes, f, indent=4)
+    change_status.start()
 
 # owner cmds
 
 @bot.command(name='eval')
 @commands.is_owner()
-async def _eval(self, ctx: commands.Context, *, body: str):
+async def _eval(ctx: commands.Context, *, body: str):
     """Evaluates a code"""
 
     env = {
@@ -379,23 +376,22 @@ async def _eval(self, ctx: commands.Context, *, body: str):
             if value:
                 await ctx.send(f'```py\n{value}\n```')
         else:
-            self._last_result = ret
+            _last_result = ret
             await ctx.send(f'```py\n{value}{ret}\n```')
 
 
-#custom prefix
-@bot.command(pass_context=True)
-@commands.has_permissions(administrator=True)
-async def prefix(ctx, prefix):
-    with open('prefixes.json', 'r') as f:
-        prefixes = json.load(f)
+# custom prefix
+@bot.command()
+@commands.check_any(commands.is_owner(), commands.has_permissions(administrator=True))
+async def prefix(ctx, new_prefix: str):
+    old_prefix = await bot.db.fetchval('SELECT prefix FROM prefixes WHERE guild_id = $1', ctx.guild.id)
 
-    prefixes[str(ctx.guild.id)] = prefix
+    if not old_prefix:
+        await bot.db.execute('INSERT INTO prefixes VALUES($1, $2)', ctx.guild.id, new_prefix)
+    else:
+        await bot.db.execute('UPDATE prefixes SET prefix = $1 WHERE guild_id = $2', new_prefix, ctx.guild.id)
 
-    with open('prefixes.json', 'w') as f:
-        json.dump(prefixes, f, indent=4)
-
-    await ctx.send(f'Prefix changed to: {prefix}')
+    await ctx.send(f'Prefix set to: {new_prefix}', allowed_mentions=discord.AllowedMentions().none())
 
 
 
