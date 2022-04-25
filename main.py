@@ -25,12 +25,16 @@ async def _prefix_callable(bot: commands.AutoShardedBot, message: discord.Messag
     if not hasattr(bot, 'db'): # hasnt connected
         return
 
+    base = [
+        f'<@{bot.user.id}>',
+        f'<@!{bot.user.id}>'
+    ]
+
     prefix = await bot.db.fetchval('SELECT prefix FROM prefixes WHERE guild_id = $1', message.guild.id)
     
-    prefix = prefix or 'd/' # default pre
+    base.appeprefix or 'd/' # default pre
 
-    prefix = 'd/'
-    return prefix
+    return commands.when_mentioned_or(prefix)
 
 class Bot(commands.AutoShardedBot):
     def __init__(self):

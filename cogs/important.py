@@ -10,7 +10,7 @@ class Important(commands.Cog):
     @commands.command(
         name="stats", aliases = ["statistics", "ping", "botinfo"]
     )
-    async def stats(self, context: commands.Context) -> None:
+    async def stats(self, ctx: commands.Context) -> None:
         """Check information about the bot."""
 
         view = discord.ui.View()
@@ -19,9 +19,9 @@ class Important(commands.Cog):
         community = discord.ui.Button(style=discord.ButtonStyle.blurple, label="Community Server", url="https://discord.gg/YjPUyP4q2J")
         documentation = discord.ui.Button(style=discord.ButtonStyle.blurple, label="Documentation", url="https://discord.gg/YjPUyP4q2J")
 
-        view.add_item(item=invite)
-        view.add_item(item=community)
-        view.add_item(item=documentation)
+        view.add_item(invite)
+        view.add_item(community)
+        view.add_item(documentation)
 
         guilds_count = len(self.bot.guilds)
         members_count = sum(g.member_count for g in self.bot.guilds)
@@ -35,7 +35,7 @@ class Important(commands.Cog):
 
                 __**Presence**__
                 ・Latency - {str(round(self.bot.latency * 1000))}ms
-                ・Shard - {context.guild.shard_id}
+                ・Shard - {ctx.guild.shard_id}
                 ・Servers - {guilds_count}
                 ・Users - {members_count}
                 """
@@ -44,7 +44,7 @@ class Important(commands.Cog):
         ).set_thumbnail(
             url='https://cdn.discordapp.com/attachments/872701275685404713/959730230157778974/959729564957958204.jpg'
         )
-        await context.send(embed=embed, view=view)
+        await ctx.send(embed=embed, view=view)
 
     @commands.command(name='report')
     @commands.cooldown(1, 60, commands.BucketType.user)
@@ -61,7 +61,7 @@ class Important(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def community(ctx):
+    async def community(self, ctx):
         view = discord.ui.View()
         button = discord.ui.Button(
             label='Join the community server!',
