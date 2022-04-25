@@ -2,6 +2,7 @@ import textwrap
 import re
 import traceback
 import io
+import contextlib
 
 import discord
 from discord.ext import commands
