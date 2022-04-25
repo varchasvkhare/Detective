@@ -10,6 +10,7 @@ import discord
 from discord.ext import commands, tasks
 import import_expression
 
+
 async def get_prefix(bot: commands.Bot, message: discord.Message):
     with open('prefixes.json', 'r') as f:
         prefixes = json.load(f)
@@ -43,7 +44,7 @@ async def _before_change_status():
 
 @bot.event
 async def on_ready():
-    print(f'Logged in as {bot.user} (ID: {bot.user.id})')
+    print(f'Logged in {bot.user} (ID: {bot.user.id})')
     print('------')
     change_status.start()
 
