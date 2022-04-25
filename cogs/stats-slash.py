@@ -1,19 +1,18 @@
 import inspect
 
 import discord
-from discord import ApplicationCommandInteraction, Option, OptionType
-from discord.ext import commands
+from discord import app_commands 
 
 
-class StatsSlash(commands.Cog, name="stats-slash"):
+class StatsSlash(app_commands.Cog, name="stats-slash"):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.slash_command(
+    @app_commands.slash_command(
         name="stats",
         description="Check statistics of the bot.",
     )
-    async def stats(self, interaction: ApplicationCommandInteraction) -> None:
+    async def stats(self, interaction: discord.interaction) -> None:
         view = discord.ui.View()
         item = discord.ui.Button(style=discord.ButtonStyle.blurple, label="Invite Me", url="https://discord.com/api/oauth2/authorize?client_id=872002294219157534&permissions=8&scope=bot%20applications.commands")
         item1 = discord.ui.Button(style=discord.ButtonStyle.blurple, label="Community Server", url="https://discord.gg/YjPUyP4q2J")
