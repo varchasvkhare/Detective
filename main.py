@@ -13,7 +13,7 @@ import discord
 from discord.ext import commands, tasks, menus
 import import_expression
 
-class BetterHelp(HelpCommand):
+class BetterHelp(commands.HelpCommand):
     def __init__(self):
         super().__init__(
             command_attrs={
@@ -34,7 +34,7 @@ bot = commands.AutoShardedBot(
     shard_count=1, 
     intents=discord.Intents.all(),
     case_insensitive=True,
-    help_command=commands.BetterHelp(),
+    help_command=BetterHelp(),
     owner_ids=[
         868465221373665351,
         714731543309844561 # invalid
