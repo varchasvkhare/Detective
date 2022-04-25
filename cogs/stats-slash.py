@@ -48,4 +48,4 @@ class StatsSlash(commands.Cog, name="stats-slash"):
 
 
 async def setup(bot):
-    bot.add_cog(StatsSlash(bot))
+    await bot.add_cog(StatsSlash(bot))
