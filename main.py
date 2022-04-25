@@ -147,7 +147,7 @@ async def dare(ctx):
 
 @dare.command(name='nsfw', aliases=['n'])
 @commands.cooldown(1, 3, commands.BucketType.member)
-@commands.is_nwfw()
+@commands.is_nsfw()
 async def nsfw_dare(ctx):
     embed = discord.Embed(
         title = "Dare <:18:917826933209829466>", description = f"{random.choice(database['nsfw_dare'])}"
