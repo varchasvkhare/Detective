@@ -31,7 +31,7 @@ async def _prefix_callable(bot: commands.AutoShardedBot, message: discord.Messag
 class Bot(commands.AutoShardedBot):
     def __init__(self):
         super().__init__(
-            command_prefix=_prefix_callable,
+            command_prefix='d/',
             shard_count=1, 
             intents=discord.Intents.all(),
             case_insensitive=True,
