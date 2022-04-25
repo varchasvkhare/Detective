@@ -22,6 +22,9 @@ BOT_TOKEN = 'ODcxNjk3MTgwMDQwMjUzNDgx.YQfFQw.vJLVpVsQKuKv8OsfMQdDVzqbcqs'
 POSTGRES_DSN = 'postgres://xmlluvrkcwnoxn:7b5307728139ba19c8c4990f658ad9a2945d34e1893f22142d9441813f091ebf@ec2-3-218-171-44.compute-1.amazonaws.com:5432/d3tgnrh10m69n'
 
 async def get_prefix(bot: commands.AutoShardedBot, message: discord.Message):
+    if not hasattr(bot, 'db'): # hasnt connected
+        return
+
     prefix = await bot.db.fetchval('SELECT prefix FROM prefixes WHERE guild_id = $1', message.guild.id)
     
     prefix = prefix or 'd/' # default pre
@@ -111,7 +114,7 @@ class Bot(commands.AutoShardedBot):
             try:
                 await self.load_extension(item)
             except Exception as exc:
-                print(f"Failed to load extension {item}", exc_info=exc)
+                print(f"Failed to load extension {item}")
                 traceback.print_exc()
 
         self.change_status.start()
@@ -120,7 +123,7 @@ class Bot(commands.AutoShardedBot):
         try:
             self.db = await asyncpg.create_pool(dsn=POSTGRES_DSN)
         except Exception as exc:
-            print('Failed to connect to database.', exc_info=exc)
+            print('Failed to connect to database.')
             traceback.print_exc()
         else:
             print('Database connected.')
