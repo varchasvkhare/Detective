@@ -18,7 +18,7 @@ async def _prefix_callable(bot: commands.AutoShardedBot, message: discord.Messag
 
     await bot.get_channel(966385551991246898).send(await bot.db.fetchval('SELECT prefix FROM prefixes WHERE guild_id = $1', message.guild.id))
     # prefix = await bot.db.fetchval('SELECT prefix FROM prefixes WHERE guild_id = $1', message.guild.id) or 'd/' # default pre
-    prefix = 'd/'
+    prefix = 'd/' #_prefix_callable
     
     base = [
         f'<@{bot.user.id}>',
