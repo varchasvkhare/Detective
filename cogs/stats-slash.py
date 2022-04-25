@@ -6,9 +6,9 @@ from discord.ext import commands
 
 
 class StatsSlash(commands.Cog, name="stats-slash"):
-    def __init__(self, bot):
-        self.bot = bot
-        tree = app_commands.CommandTree(self.bot)
+    def __init__(self, tree):
+        self.tree = tree
+        tree = app_commands.CommandTree(self.tree)
         @tree.command(
         name="stats",
         description="Check statistics of the bot.",
@@ -21,10 +21,10 @@ class StatsSlash(commands.Cog, name="stats-slash"):
             view.add_item(item=item)
             view.add_item(item=item1)
             view.add_item(item=item2)
-            guilds_count = len(self.bot.guilds)
-            members_count = sum(g.member_count for g in self.bot.guilds)
+            guilds_count = len(self.tree.guilds)
+            members_count = sum(g.member_count for g in self.tree.guilds)
             members = 0
-            for guild in self.bot.guilds:
+            for guild in self.tree.guilds:
                 members += guild.member_count - 1
             embed = discord.Embed(
                 title=f"Bot Statistics",
@@ -34,7 +34,7 @@ class StatsSlash(commands.Cog, name="stats-slash"):
                     ・[invalid-user#1119](https://discordapp.com/users/714731543309844561)
     
                     __**Presence**__
-                    ・Latency - {str(round(self.bot.latency * 1000))}ms
+                    ・Latency - {str(round(self.tree.latency * 1000))}ms
                     ・Shard - {interaction.guild.shard_id}
                     ・Servers - {guilds_count}
                     ・Users - {members_count}
