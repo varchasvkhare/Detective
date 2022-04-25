@@ -1,17 +1,17 @@
 import aiohttp
 import discord
-from discord import Interaction
+from discord import interactions, app_commands
 from discord.ext import commands
 
 class Stats(commands.Cog, name="stats-slash"):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.slash_command(
+    @app_commands.commands(
         name="stats",
         description="Check statistics of the bot.",
     )
-    async def stats(self, interaction: Interaction) -> None:
+    async def stats(self, interaction: interactions) -> None:
         """
         Check if the bot is alive.
         :param interaction: The application command interaction.
