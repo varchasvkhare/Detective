@@ -13,7 +13,7 @@ import discord
 from discord.ext import commands, tasks, menus
 import import_expression
 
-class BetterHelp(commands.HelpCommand):
+class BetterHelp(HelpCommand):
     def __init__(self):
         super().__init__(
             command_attrs={
