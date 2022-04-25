@@ -4,7 +4,7 @@ import traceback
 import io
 
 import discord
-from discord import commands
+from discord.ext import commands
 import import_expression
 
 class Owner(commands.Cog):
