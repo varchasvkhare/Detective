@@ -44,7 +44,7 @@ async def _before_change_status():
 
 @bot.event
 async def on_ready():
-    print(f'Logged in {bot.user} (ID: {bot.user.id})')
+    print(f'Logged in as {bot.user} (ID: {bot.user.id})')
     print('------')
     change_status.start()
 
