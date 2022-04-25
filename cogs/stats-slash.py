@@ -9,7 +9,7 @@ class StatsSlash(commands.Cog, name="stats-slash"):
     def __init__(self, bot):
         self.bot = bot
         tree = app_commands.CommandTree(self.bot)
-        @tree.slash_command(
+        @tree.command(
         name="stats",
         description="Check statistics of the bot.",
         )
