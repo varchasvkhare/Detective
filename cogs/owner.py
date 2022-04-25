@@ -54,13 +54,13 @@ class Owner(commands.Cog):
         to_compile = f'async def func():\n{textwrap.indent(body, "  ")}'
 
         try:
-            exec(to_compile, env)
+            import_expression.exec(to_compile, env)
         except Exception as e:
             return await ctx.send(f'```py\n{e.__class__.__name__}: {e}\n```')
 
         func = env['func']
         try:
-            with import_expression.redirect_stdout(stdout):
+            with contextlib.redirect_stdout(stdout):
                 ret = await func()
         except Exception as e:
             value = stdout.getvalue()
