@@ -7,6 +7,7 @@ import inspect
 
 import discord
 from discord.ext import commands, tasks
+from discord import app_commands
 import asyncpg
 
 BOT_TOKEN = 'ODcxNjk3MTgwMDQwMjUzNDgx.YQfFQw.vJLVpVsQKuKv8OsfMQdDVzqbcqs'
@@ -27,6 +28,10 @@ async def _prefix_callable(bot: commands.AutoShardedBot, message: discord.Messag
     ]
     
     return base
+
+class Tree(app_commands.CommandTree):
+    def __init__(self):
+        super().__init__(Bot)
 
 class Bot(commands.AutoShardedBot):
     def __init__(self):
