@@ -12,7 +12,7 @@ class Owner(commands.Cog):
         self.bot = bot
         self._last_result = None
 
-    def cleanup_code(content: str) -> str:
+    def cleanup_code(self, content: str) -> str:
         """Automatically removes code blocks from the code."""
         # remove ```py\n```
         _regex = re.compile(r"^((```py(thon)?)(?=\s)|(```))")
