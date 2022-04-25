@@ -42,7 +42,7 @@ class Important(commands.Cog):
             ),
             color=0x9C84EF
         ).set_thumbnail(
-            url='https://cdn.discordapp.com/attachments/872701275685404713/959730230157778974/959729564957958204.jpg'
+            url='https://cdn.discordapp.com/attachments/870608893334659106/968156284845178901/959729564957958204.png'
         )
         await ctx.send(embed=embed, view=view)
 
@@ -54,11 +54,6 @@ class Important(commands.Cog):
         await channel.send(embed = embed)
         await ctx.message.delete()
         await ctx.send(f"{ctx.author.mention} - *Thanks for the report, it has been sent to bot staff!*")
-
-    @commands.command()
-    async def servers(self, ctx):
-        embed = discord.Embed(description=f"I am in {len(self.bot.guilds)} servers!", colour=0xFFF59E)
-        await ctx.send(embed=embed)
 
     @commands.command()
     async def community(self, ctx):
