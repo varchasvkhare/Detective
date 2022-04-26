@@ -126,6 +126,8 @@ class Bot(commands.AutoShardedBot):
         else:
             print('Database connected.')
 
+        await self.db.execute('CREATE TABLE IF NOT EXISTS prefixes (guild_id BIGINT, prefix TEXT)')
+
     async def setup_hook(self):
         asyncio.create_task(self._startup_task())
         await self._create_pool()
