@@ -12,9 +12,11 @@ class Owner(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self._last_result = None
+
+        self.jishaku = bot.get_cog('Jishaku')
     
-    async def cog_check(self, ctx: Context[BotT]) -> bool:
-        return super().cog_check(ctx)
+    async def cog_check(self, ctx: commands.Context) -> bool:
+        return await ctx.bot.is_owner(ctx.author)
 
     def cleanup_code(self, content: str) -> str:
         """Automatically removes code blocks from the code."""
@@ -82,9 +84,31 @@ class Owner(commands.Cog):
             else:
                 self._last_result = ret
                 await ctx.send(f'```py\n{value}{ret}\n```')
+            
+    async def _check_jishaku(self, ctx: commands.Context):
+        if not self.jishaku:
+            return await ctx.reply('This feature is not available at the moment.')
     
-    @commands.command(name='sudo')
-    async def load(self)
+    @commands.command()
+    async def load(self, ctx: commands.Context, extension: str):
+        """Loads an extension."""
+        
+        await self._check_jishaku(ctx)
+        await self.jishaku.jsk_load(ctx, extension)
+
+    @commands.command()
+    async def load(self, ctx: commands.Context, extension: str):
+        """Unloads an extension."""
+        
+        await self._check_jishaku(ctx)
+        await self.jishaku.jsk_unload(ctx, extension)
+
+    @commands.command(name='reload', aliases=['re'])
+    async def _reload(self, ctx: commands.Context, extension: str):
+        """Reloads an extension."""
+        
+        await self._check_jishaku(ctx)
+        await self.jishaku.jsk_reload(ctx, extension)
     
 async def setup(bot):
     await bot.add_cog(Owner(bot))
