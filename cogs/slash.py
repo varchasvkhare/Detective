@@ -1,21 +1,29 @@
 import aiohttp
+
 import discord
-from discord import interactions, app_commands
+from discord import Interaction, app_commands
 from discord.ext import commands
 
-class Stats(commands.Cog, name="stats-slash"):
+class Stats(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+    
+    @app_commands.command(
+        name="ping"
+    )
+    async def _ping(self, interaction: Interaction):
+        """Returns a pong!"""
+        await interaction.response.send_message(
+            "\N{TABLE TENNIS PADDLE AND BALL} Pong!",
+            ephemeral=True
+        )
 
+    """
     @app_commands.commands(
         name="stats",
         description="Check statistics of the bot.",
     )
-    async def stats(self, interaction: interactions) -> None:
-        """
-        Check if the bot is alive.
-        :param interaction: The application command interaction.
-        """
+    async def stats(self, interaction: Interaction) -> None:
         view = discord.ui.View()
         item = discord.ui.Button(style=discord.ButtonStyle.blurple, label="Invite Me", url="https://discord.com/api/oauth2/authorize?client_id=872002294219157534&permissions=8&scope=bot%20applications.commands")
         item1 = discord.ui.Button(style=discord.ButtonStyle.blurple, label="Community Server", url="https://discord.gg/YjPUyP4q2J")
@@ -34,7 +42,7 @@ class Stats(commands.Cog, name="stats-slash"):
         )
         embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/872701275685404713/959730230157778974/959729564957958204.webp')
         await interaction.send(embed=embed, ephemeral = True, view = view)
-
+    """
 
 async def setup(bot):
     await bot.add_cog(Stats(bot))

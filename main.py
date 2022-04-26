@@ -127,8 +127,8 @@ class Bot(commands.AutoShardedBot):
             print('Database connected.')
 
     async def setup_hook(self):
-        await self._create_pool()
         asyncio.create_task(self._startup_task())
+        await self._create_pool()
     
     async def start(self):
         await super().start(
