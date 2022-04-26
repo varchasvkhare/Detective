@@ -4,15 +4,31 @@ import asyncio
 import discord
 from discord.ext import commands
 
+from data import (
+    dares, nsfw_dares, 
+    truths, nsfw_truths, 
+    neverhaveiever, 
+    thisorthat
+)
+
 class Fun(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
+
+        self.fun_data = {
+            'dares': dares,
+            'nsfw_dares': nsfw_dares,
+            'truths': truths,
+            'nsfw_truths': nsfw_truths,
+            'neverhaveiever': neverhaveiever,
+            'thisorthat': thisorthat
+        }
 
     @commands.group(name='truth', invoke_without_command=True, aliases=['t'])
     @commands.cooldown(1, 3, commands.BucketType.member)
     async def truth(self, ctx):
         embed = discord.Embed(
-            title = "Truth", description = f"{random.choice(self.bot.fun_database['truths'])}"
+            title = "Truth", description = f"{random.choice(self.fun_data['truths'])}"
         ).set_thumbnail(
             url = 'https://cdn.discordapp.com/avatars/871986650157297685/204c06ac6be9d5f85f36f5b103581489.png?size=1024'
         )
@@ -23,46 +39,17 @@ class Fun(commands.Cog):
     @commands.is_nsfw()
     async def nsfw_truth(self, ctx):
         embed = discord.Embed(
-            title = "Truth <:18:917826933209829466>", description = f"{random.choice(self.bot.fun_database['nsfw_truth'])}"
+            title = "Truth <:18:917826933209829466>", description = f"{random.choice(self.fun_data['nsfw_truths'])}"
         ).set_thumbnail(
             url = 'https://cdn.discordapp.com/avatars/871986650157297685/204c06ac6be9d5f85f36f5b103581489.png?size=1024'
         )
         await ctx.send(embed=embed)
-
-    @commands.command()
-    @commands.max_concurrency(1, commands.BucketType.member)
-    async def gtn(self, ctx):
-        number = random.randint(1, 100)
-        await ctx.send('Guess a number between 1 to 100!')
-
-        def check(m):
-            return m.channel == ctx.channel and m.author == ctx.author and m.content.isdigit()
-
-        for i in range(0, 5):        
-            try:
-                message = await self.bot.wait_for(
-                    'message', 
-                    timeout=15.0, 
-                    check=check
-                )
-            except asyncio.TimeoutError:
-                await ctx.send(f"{ctx.author.mention} - The guess the number session has timed out!")
-                break
-            
-            guess = int(message.content)
-            if guess > number:
-                await ctx.reply('Guess a smaller number!')
-            elif guess < number:
-                await ctx.reply('Guess a larger number!')
-            else:
-                await ctx.reply(f'Congrats, you have won the game! The number was **{number}**.')
-                break
         
     @commands.group(name='dare', invoke_without_command=True, aliases=['d'])
     @commands.cooldown(1, 3, commands.BucketType.member)
     async def dare(self, ctx):
         embed = discord.Embed(
-            title = "Dare", description = f"{random.choice(self.bot.fun_database['dares'])}"
+            title = "Dare", description = f"{random.choice(self.fun_data['dares'])}"
         ).set_thumbnail(
             url = 'https://cdn.discordapp.com/avatars/871986650157297685/204c06ac6be9d5f85f36f5b103581489.png?size=1024'
         )
@@ -73,7 +60,7 @@ class Fun(commands.Cog):
     @commands.is_nsfw()
     async def nsfw_dare(self, ctx):
         embed = discord.Embed(
-            title = "Dare <:18:917826933209829466>", description = f"{random.choice(self.bot.fun_database['nsfw_dare'])}"
+            title = "Dare <:18:917826933209829466>", description = f"{random.choice(self.fun_data['nsfw_dares'])}"
         ).set_thumbnail(
             url = 'https://cdn.discordapp.com/avatars/871986650157297685/204c06ac6be9d5f85f36f5b103581489.png?size=1024'
         )
@@ -82,7 +69,7 @@ class Fun(commands.Cog):
     @commands.command(name='never', aliases=['neverhaveiever', 'nhie', 'ever', 'n'])
     @commands.cooldown(1, 3, commands.BucketType.member)
     async def never(self, ctx):
-        embed = discord.Embed(title = "Never Have I Ever", description = f"{random.choice(self.bot.fun_database['nhie'])}")
+        embed = discord.Embed(title = "Never Have I Ever", description = f"{random.choice(self.fun_data['neverhaveiever'])}")
         embed.set_thumbnail(url = 'https://cdn.discordapp.com/avatars/871986650157297685/204c06ac6be9d5f85f36f5b103581489.png?size=1024')
         await ctx.reply(embed=embed)
 
@@ -91,24 +78,96 @@ class Fun(commands.Cog):
     async def thisorthat(self, ctx):
         """Get a this or that question."""
 
-        response = random.choice(self.bot.fun_database['tot'])
+        response = random.choice(self.fun_data['thisorthat'])
+
+        embed = discord.Embed()
+
         message = []
 
         if ':' in response: 
             split = response.split(':')
-            message.append(f"**{split[0]}**")
-            tort = split[1].strip()
+            embed.title = split[0]
+            tot = split[1].strip()
         else:
-            tort = response
+            tot = response
         
-        message.append(f"🔴 {tort.replace(' or ', ' **OR** ')} 🔵")
-
-        embed = discord.Embed(
-            description='\n'.join(message)
+        embed.description = (
+            f"🔴 {tot.replace(' or ', ' **OR** ')} 🔵"
         )
-        sent_embed = await ctx.send(embed = embed)
-        await sent_embed.add_reaction("🔴")
-        await sent_embed.add_reaction("🔵")
+
+        message = await ctx.send(embed=embed)
+        await message.add_reaction("🔴")
+        await message.add_reaction("🔵")
+
+    @commands.command()
+    @commands.max_concurrency(1, commands.BucketType.member)
+    async def gtn(self, ctx):
+        number = random.randint(1, 100)
+        await ctx.send('Guess a number between 1 to 100!')
+
+        def check(m):
+            return m.channel == ctx.channel and m.author == ctx.author and m.content.isdigit()
+
+        view = discord.ui.View()
+
+        maximum_tries = 5
+        for i in range(maximum_tries):
+            view.clear_items()
+
+            # max tries
+            if i == maximum_tries:
+                view.add_item(
+                    discord.ui.Button(
+                        label=f'{i}/{maximum_tries} tries',
+                        disabled=True
+                    )
+                )
+                await ctx.send(f"{ctx.author.mention} - Maximum tries reached! Please try again.", view=view)
+
+            # wait for
+            try:
+                message = await self.bot.wait_for(
+                    'message', 
+                    timeout=15.0, 
+                    check=check
+                )
+            except asyncio.TimeoutError:
+                view.add_item(
+                    discord.ui.Button(
+                        label=f'{i}/{maximum_tries} tries',
+                        disabled=True
+                    )
+                )
+                await ctx.send(f"{ctx.author.mention} - The guess the number session has timed out!", view=view)
+                break
+            
+            guess = int(message.content)
+
+            if guess == number:
+                view.add_item(
+                    discord.ui.Button(
+                        label=f'{i}/{maximum_tries} tries',
+                        disabled=True
+                    )
+                )
+                await message.reply(f'Congrats, you have won the game! The number was **{number}**.', view=view)
+                break
+            if guess > number:
+                view.add_item(
+                    discord.ui.Button(
+                        label=f'{maximum_tries - i}/{maximum_tries} tries left',
+                        disabled=True
+                    )
+                )
+                await message.reply('Guess a smaller number!', view=view)
+            elif guess < number:
+                view.add_item(
+                    discord.ui.Button(
+                        label=f'{maximum_tries - i}/{maximum_tries} tries left',
+                        disabled=True
+                    )
+                )
+                await message.reply('Guess a larger number!', view=view)
     
 async def setup(bot):
     await bot.add_cog(Fun(bot))

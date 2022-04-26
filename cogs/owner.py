@@ -12,11 +12,14 @@ class Owner(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self._last_result = None
-
-        self.jishaku = bot.get_cog('Jishaku')
     
     async def cog_check(self, ctx: commands.Context) -> bool:
         return await ctx.bot.is_owner(ctx.author)
+    
+    @commands.Cog.listener('on_message_edit')
+    async def edit_process(self, message: discord.Message):
+        if await self.bot.is_owner(message.author):
+            await self.bot.process_commands(message)
 
     def cleanup_code(self, content: str) -> str:
         """Automatically removes code blocks from the code."""
@@ -86,29 +89,41 @@ class Owner(commands.Cog):
                 await ctx.send(f'```py\n{value}{ret}\n```')
             
     async def _check_jishaku(self, ctx: commands.Context):
-        if not self.jishaku:
+        if not self.bot.get_cog('Jishaku'):
             return await ctx.reply('This feature is not available at the moment.')
     
     @commands.command()
-    async def load(self, ctx: commands.Context, extension: str):
+    async def load(self, ctx: commands.Context, *extensions: str):
         """Loads an extension."""
         
         await self._check_jishaku(ctx)
-        await self.jishaku.jsk_load(ctx, extension)
+
+        command = self.bot.get_command('jishaku load')
+        await ctx.invoke(
+            ctx, *extensions
+        )
 
     @commands.command()
-    async def load(self, ctx: commands.Context, extension: str):
+    async def load(self, ctx: commands.Context, *extensions: str):
         """Unloads an extension."""
         
         await self._check_jishaku(ctx)
-        await self.jishaku.jsk_unload(ctx, extension)
+
+        command = self.bot.get_command('jishaku unload')
+        await ctx.invoke(
+            ctx, *extensions
+        )
 
     @commands.command(name='reload', aliases=['re'])
-    async def _reload(self, ctx: commands.Context, extension: str):
+    async def _reload(self, ctx: commands.Context, *extensions: str):
         """Reloads an extension."""
         
         await self._check_jishaku(ctx)
-        await self.jishaku.jsk_reload(ctx, extension)
+
+        command = self.bot.get_command('jishaku reload')
+        await ctx.invoke(
+            ctx, *extensions
+        )
     
 async def setup(bot):
     await bot.add_cog(Owner(bot))

@@ -7,6 +7,7 @@ import inspect
 
 import discord
 from discord.ext import commands, tasks
+from discord import app_commands
 import asyncpg
 
 BOT_TOKEN = 'ODcxNjk3MTgwMDQwMjUzNDgx.YQfFQw.vJLVpVsQKuKv8OsfMQdDVzqbcqs'
@@ -42,6 +43,20 @@ class Bot(commands.AutoShardedBot):
         )
 
         self.add_check(self.blacklisted_check)
+
+        self.fun_database = {
+            "truths": self.parse_list_file('./data/truths.txt'),
+            "dares": self.parse_list_file('./data/dares.txt'),
+            "nhie": self.parse_list_file('./data/nhie.txt'),
+            "nsfw_truth": self.parse_list_file('./data/nsfw_truth.txt'),
+            "nsfw_dare": self.parse_list_file('./data/nsfw_dare.txt'),
+            "tot": self.parse_list_file('./data/tot.txt')
+        }
+    
+    def parse_list_file(self, file_path: str) -> list:
+        """Parse a text file into a list containing each line."""
+        with open(file_path) as f:
+            return [l.strip() for l in f.readlines() if l.strip()]
     
     async def blacklisted_check(self, ctx: commands.Context):
         # bot owners bypass this
