@@ -12,6 +12,9 @@ class Owner(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self._last_result = None
+    
+    async def cog_check(self, ctx: Context[BotT]) -> bool:
+        return super().cog_check(ctx)
 
     def cleanup_code(self, content: str) -> str:
         """Automatically removes code blocks from the code."""
@@ -79,6 +82,9 @@ class Owner(commands.Cog):
             else:
                 self._last_result = ret
                 await ctx.send(f'```py\n{value}{ret}\n```')
+    
+    @commands.command(name='sudo')
+    async def load(self)
     
 async def setup(bot):
     await bot.add_cog(Owner(bot))
