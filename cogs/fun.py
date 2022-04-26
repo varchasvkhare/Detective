@@ -101,7 +101,7 @@ class Fun(commands.Cog):
 
     @commands.command()
     @commands.max_concurrency(1, commands.BucketType.member)
-    async def gtn(self, ctx):
+    async def gtn(self, ctx: commands.Context):
         number = random.randint(1, 100)
         await ctx.send('Guess a number between 1 to 100!')
 
@@ -110,19 +110,22 @@ class Fun(commands.Cog):
 
         view = discord.ui.View()
 
+        current_count = 1
         maximum_tries = 5
-        for i in range(maximum_tries):
+        while True:
             view.clear_items()
 
             # max tries
-            if i == maximum_tries:
+            if current_count == maximum_tries:
                 view.add_item(
                     discord.ui.Button(
-                        label=f'{i}/{maximum_tries} tries',
+                        label=f'{current_count}/{maximum_tries} tries used',
                         disabled=True
                     )
                 )
                 await ctx.send(f"{ctx.author.mention} - Maximum tries reached! Please try again.", view=view)
+            
+            current_count += 1
 
             # wait for
             try:
@@ -134,7 +137,7 @@ class Fun(commands.Cog):
             except asyncio.TimeoutError:
                 view.add_item(
                     discord.ui.Button(
-                        label=f'{i}/{maximum_tries} tries',
+                        label=f'{current_count}/{maximum_tries} tries used',
                         disabled=True
                     )
                 )
@@ -146,7 +149,7 @@ class Fun(commands.Cog):
             if guess == number:
                 view.add_item(
                     discord.ui.Button(
-                        label=f'{i}/{maximum_tries} tries',
+                        label=f'{current_count}/{maximum_tries} tries used',
                         disabled=True
                     )
                 )
@@ -155,7 +158,7 @@ class Fun(commands.Cog):
             if guess > number:
                 view.add_item(
                     discord.ui.Button(
-                        label=f'{maximum_tries - i}/{maximum_tries} tries left',
+                        label=f'{maximum_tries - current_count}/{maximum_tries} tries left',
                         disabled=True
                     )
                 )
@@ -163,7 +166,7 @@ class Fun(commands.Cog):
             elif guess < number:
                 view.add_item(
                     discord.ui.Button(
-                        label=f'{maximum_tries - i}/{maximum_tries} tries left',
+                        label=f'{maximum_tries - current_count}/{maximum_tries} tries left',
                         disabled=True
                     )
                 )
