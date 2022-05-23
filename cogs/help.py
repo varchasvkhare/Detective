@@ -28,6 +28,7 @@ class Help(commands.Cog):
                 Hy, I'm {self.bot.user.name}!
                 You can have a look at my commands below.
                 For further help, join my [server](https://discord.gg/YjPUyP4q2J).
+                Prefix for the server is `{prefix}`
                 """
             )
         )
@@ -49,7 +50,7 @@ class Help(commands.Cog):
                 ```
                 """
             ),
-            inline=False
+            inline=True
         )
         embed.add_field(
             name='Games',
@@ -64,7 +65,7 @@ class Help(commands.Cog):
                 ```
                 """
             ),
-            inline=False
+            inline=True
         )
 
         await ctx.send(embed=embed)
