@@ -65,7 +65,7 @@ class Important(commands.Cog):
         view.add_item(button)
 
         embed = discord.Embed(
-            title = "• ━━ V A N Q U I S H E R ━━ •",
+            title = "• ━━ D E T E C T I V E   H U B ━━ •",
             description=inspect.cleandoc(
                 """> ***Events!!***
                 ・:detective: mafia, :crossed_swords: rumble, :tea: tea, :notes: music and more!
